@@ -7,11 +7,11 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/settingButton"
         android:layout_width="50dp"
         android:layout_height="41dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_settings_black_24dp"

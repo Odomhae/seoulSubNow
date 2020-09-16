@@ -15,6 +15,7 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.system.exitProcess
@@ -51,6 +52,11 @@ class MainActivity : AppCompatActivity() {
 
         //권한 요청
         ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_CODE)
+
+        // 설정 화면
+        settingButton.setOnClickListener {
+            startActivity(Intent(this, settingActivity::class.java))
+        }
     }
 
     // 인터넷 연결 확인
@@ -78,22 +84,15 @@ class MainActivity : AppCompatActivity() {
     // 맵뷰의 라이프사이클 함수 호출
     override fun onResume() {
         super.onResume()
-        //  앱 AsyncTask 중지되었으면
-        if(ToiletReadTask().status == AsyncTask.Status.FINISHED)
-            ToiletReadTask().execute()
+
     }
     override fun onPause() {
         super.onPause()
-        // 앱 AsyncTask도 pause
-        if(ToiletReadTask().status == AsyncTask.Status.RUNNING)
-            ToiletReadTask().cancel(true)
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // 앱 종료시 AsyncTask도 종료
-        if(ToiletReadTask().status == AsyncTask.Status.RUNNING)
-            ToiletReadTask().cancel(true)
     }
 
     override fun onLowMemory() {
@@ -102,71 +101,6 @@ class MainActivity : AppCompatActivity() {
 
     // 서울 열린 데이터 광장 발급 키
     val API_KEY = "62576e4b746a6968313237496f745165"
-
-
-    // 화장실 데이터를 읽어오는 AsyncTask
-    @SuppressLint("StaticFieldLeak")
-    inner class ToiletReadTask : AsyncTask<Void, JSONArray, String>() {
-
-        val asyncDialog : ProgressDialog = ProgressDialog(this@MainActivity)
-
-        // 기존 데이터 초기화
-        override fun onPreExecute() {
-
-
-            asyncDialog.setProgressStyle(ProgressDialog.BUTTON_POSITIVE)
-            asyncDialog.setMessage("Loading...")
-            asyncDialog.show()
-        }
-
-        override fun doInBackground(vararg params: Void?): String {
-
-            // 서울시 데이터는 최대 1000개씩 가져올 수 있으므로
-            // 1000개씩 끊는다.
-            val step = 1000
-            var startIndex = 1
-            var lastIndex = step
-            var totalCnt = 0
-
-            do {
-                // 백그라운드 작업이 취소되었을 때는 루프 종료
-                if (isCancelled)
-                    break
-
-                if (totalCnt != 0) {
-                    startIndex += step // 1000
-                    lastIndex += step // 1000
-                }
-
-
-
-            } while (lastIndex < totalCnt)
-
-            return "complete"
-        }
-
-        // 데이터를 읽어올때마다 실행
-        override fun onProgressUpdate(vararg values: JSONArray?) {
-            // 0번째의 데이터 사용
-            val array = values[0]
-        }
-
-        // 백그라운드 작업이 끝난 후 실행
-        override fun onPostExecute(result: String?) {
-            // 자동완성 텍스트뷰에서 사용할 텍스트 리스트
-            val textList = mutableListOf<String>()
-
-
-            // 자동완성 텍스트뷰의 어댑터 추가
-            val adapter = ArrayAdapter<String>(
-                this@MainActivity,
-                android.R.layout.simple_dropdown_item_1line, textList
-            )
-
-            // ProgressDialog 종료
-            asyncDialog.dismiss()
-        }
-    }
 
     // JSONArray에서 원소의 속성으로 검색
     fun JSONArray.findByChildProperty(propertyName : String, value : String) : JSONObject?{
