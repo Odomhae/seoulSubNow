@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 class settingActivity :AppCompatActivity(){
 
     val fragment = prefFragment()
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.setting_layout)
+
         fragmentManager.beginTransaction().replace(R.id.frameLayout, fragment).commit()
     }
 
